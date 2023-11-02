@@ -36,10 +36,6 @@ class MultilinearSparseEvaluations {
     evaluations_ = {{0, F::Zero()}};
   }
 
-  // MultilinearSparseEvaluations() : zero_(num_vars_(NumVars), F::Zero()), {
-  //   evaluations_ = {{0, F::Zero()}};
-  // }
-
   MultilinearSparseEvaluations(
       const std::vector<std::pair<std::size_t, F>>& evaluations)
       : evaluations_(evaluations.begin(), evaluations.end()) {
@@ -158,34 +154,17 @@ class MultilinearSparseEvaluations {
     return fixed.evaluations_[0];
   }
 
-  // std::string ToString() const {
-  //   if (evaluations_.empty()) return "Empty Map";
+  std::string ToString() const{
+    if (evaluations_.empty()) return "Empty Map";
 
-  //   std::stringstream ss;
-  //   bool has_entry = false;
-  //   for (const auto& entry : evaluations_) {
-  //     if (has_entry) ss << ", ";
-  //     has_entry = true;
-  //     ss << "Key: " << entry.first << ", Value: " << entry.second;
-  //   }
-  //   return ss.str();
-  // }
-
-  std::string ToString() const {
-    std::string result = "[";
-    bool firstEntry = true;  // 첫 번째 항목인지 여부를 추적
-
+    std::stringstream ss;
+    bool has_entry = false;
     for (const auto& entry : evaluations_) {
-      if (!firstEntry) {
-        result += ", ";  // 첫 번째 항목이 아닌 경우에 쉼표를 추가
-      }
-      result += "(" + std::to_string(entry.first) + ", " +
-                entry.second.ToString() + ")";
-      firstEntry = false;  // 첫 번째 항목 처리 후에는 false로 설정
+      if (has_entry) ss << ", ";
+      has_entry = true;
+      ss << "Key: " << entry.first << ", Value: " << entry.second;
     }
-
-    result += "]";
-    return result;
+    return ss.str();
   }
 
  private:
