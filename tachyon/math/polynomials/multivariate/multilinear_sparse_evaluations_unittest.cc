@@ -129,20 +129,20 @@ TEST_F(MultilinearSparseEvaluationsTest, Degree) {
 //   }
 // }
 
-// TEST_F(MultilinearSparseEvaluationsTest, ToString) {
-//   struct {
-//     const Poly& poly;
-//     std::string_view expected;
-//   } tests[] = {
-//       {polys_[0], "[2, 3]"},
-//       {polys_[1], "[4, 2]"},
-//       {polys_[2], "[2, 3, 2, 6, 5]"},
-//   };
+TEST_F(MultilinearSparseEvaluationsTest, ToString) {
+  struct {
+    const Poly& poly;
+    std::string_view expected;
+  } tests[] = {
+      {polys_[0], "[(0, 3), (1, 2)]"},
+      {polys_[1], "[(1, 2), (2, 3)]"},
+      {polys_[2], "[(0, 3), (1, 3), (2, 2), (5, 2)]"},
+  };
 
-//   for (const auto& test : tests) {
-//     EXPECT_EQ(test.poly.ToString(), test.expected);
-//   }
-// }
+  for (const auto& test : tests) {
+    EXPECT_EQ(test.poly.ToString(), test.expected);
+  }
+}
 
 // TEST_F(MultilinearDenseEvaluationsTest, AdditiveOperators) {
 //   struct {
