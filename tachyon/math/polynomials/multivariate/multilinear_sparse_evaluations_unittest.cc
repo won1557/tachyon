@@ -26,6 +26,7 @@ class MultilinearSparseEvaluationsTest : public testing::Test {
     polys_.push_back(Poly(Evals({{2, GF7(3)}, {1, GF7(2)}})));
     polys_.push_back(
         Poly(Evals({{0, GF7(3)}, {2, GF7(2)}, {1, GF7(3)}, {5, GF7(2)}})));
+    polys_.push_back(Poly(Evals({{2, GF7(3)}, {1, GF7(2)}})));
   }
   MultilinearSparseEvaluationsTest(const MultilinearSparseEvaluationsTest&) =
       delete;
@@ -108,26 +109,25 @@ TEST_F(MultilinearSparseEvaluationsTest, Degree) {
   EXPECT_LE(Poly(Evals::Random(kNumVars, rnd)).Degree(), kMaxDegree);
 }
 
-// TEST_F(MultilinearDenseEvaluationsTest, Evaluate) {
-//   std::function<std::vector<GF7>(size_t, size_t)> convert_to_le =
-//       [](size_t number, size_t degree) {
-//         std::vector<GF7> ret;
-//         for (size_t i = 0; i < degree; ++i) {
-//           ret.push_back(GF7(uint64_t{(number & (size_t{1} << i)) != 0}));
-//         }
-//         return ret;
-//       };
+TEST_F(MultilinearSparseEvaluationsTest, Evaluate) {
+  auto convert_to_le = [](size_t number, size_t degree) {
+    std::vector<GF7> ret;
+    for (size_t i = 0; i < degree; ++i) {
+      ret.push_back(GF7(uint64_t{(number & (size_t{1} << i)) != 0}));
+    }
+    return ret;
+  };
 
-//   for (const Poly& poly : polys_) {
-//     size_t degree = poly.Degree();
-//     for (size_t i = 0; i < (size_t{1} << degree); ++i) {
-//       const GF7* elem = poly[i];
-//       if (!elem) break;
-//       std::vector<GF7> point = convert_to_le(i, degree);
-//       EXPECT_EQ(poly.Evaluate(point), *elem);
-//     }
-//   }
-// }
+  for (const Poly& poly : polys_) {
+    size_t degree = poly.Degree();
+    for (size_t i = 0; i < (size_t{1} << degree); ++i) {
+      const GF7* elem = poly[i];
+      if (!elem) break;
+      std::vector<GF7> point = convert_to_le(i, degree);
+      EXPECT_EQ(poly.Evaluate(point), *elem);
+    }
+  }
+}
 
 TEST_F(MultilinearSparseEvaluationsTest, ToString) {
   struct {
@@ -144,80 +144,109 @@ TEST_F(MultilinearSparseEvaluationsTest, ToString) {
   }
 }
 
-// TEST_F(MultilinearDenseEvaluationsTest, AdditiveOperators) {
-//   struct {
-//     const Poly& a;
-//     const Poly& b;
-//     Poly sum;
-//     Poly amb;
-//     Poly bma;
-//   } tests[] = {
-//       {
-//           polys_[0],
-//           polys_[1],
-//           Poly(Evals({GF7(6), GF7(5)})),
-//           Poly(Evals({GF7(5), GF7(1)})),
-//           Poly(Evals({GF7(2), GF7(6)})),
-//       },
-//       {
-//           polys_[2],
-//           polys_[3],
-//           Poly(Evals({GF7(5), GF7(4), GF7(3), GF7(3), GF7(0)})),
-//           Poly(Evals({GF7(6), GF7(2), GF7(1), GF7(2), GF7(3)})),
-//           Poly(Evals({GF7(1), GF7(5), GF7(6), GF7(5), GF7(4)})),
-//       },
-//   };
+TEST_F(MultilinearSparseEvaluationsTest, ToDense) {
+  struct {
+    const Poly& poly;
+    std::string_view expected;
+  } tests[] = {
+      {polys_[0], "[3, 2, 0, 0, 0, 0, 0, 0]"},
+      {polys_[1], "[0, 2, 3, 0, 0, 0, 0, 0]"},
+      {polys_[2], "[3, 3, 2, 0, 0, 2, 0, 0]"},
+  };
 
-//   for (const auto& test : tests) {
-//     EXPECT_EQ(test.a + test.b, test.sum);
-//     EXPECT_EQ(test.b + test.a, test.sum);
-//     EXPECT_EQ(test.a - test.b, test.amb);
-//     EXPECT_EQ(test.b - test.a, test.bma);
+  for (const auto& test : tests) {
+    EXPECT_EQ(test.poly.ToDense().ToString(), test.expected);
+  }
+}
 
-//     Poly tmp = test.a;
-//     tmp += test.b;
-//     EXPECT_EQ(tmp, test.sum);
-//     tmp -= test.b;
-//     EXPECT_EQ(tmp, test.a);
-//   }
-// }
+TEST_F(MultilinearSparseEvaluationsTest, AdditiveOperators) {
+  struct {
+    const Poly& a;
+    const Poly& b;
+    Poly sum;
+    Poly amb;
+    Poly bma;
+  } tests[] = {
+      {
+          polys_[0],
+          polys_[1],
+          Poly(Evals({{0, GF7(3)}, {1, GF7(4)}, {2, GF7(3)}})),
+          Poly(Evals({{0, GF7(3)}, {2, GF7(4)}})),
+          Poly(Evals({{0, GF7(4)}, {2, GF7(3)}})),
+      },
 
-// TEST_F(MultilinearDenseEvaluationsTest, MultiplicativeOperators) {
-//   struct {
-//     const Poly& a;
-//     const Poly& b;
-//     Poly mul;
-//     Poly adb;
-//     Poly bda;
-//   } tests[] = {
-//       {
-//           polys_[0],
-//           polys_[1],
-//           Poly(Evals({GF7(1), GF7(6)})),
-//           Poly(Evals({GF7(4), GF7(5)})),
-//           Poly(Evals({GF7(2), GF7(3)})),
-//       },
-//       {
-//           polys_[2],
-//           polys_[3],
-//           Poly(Evals({GF7(6), GF7(3), GF7(2), GF7(3), GF7(3)})),
-//           Poly(Evals({GF7(3), GF7(3), GF7(2), GF7(5), GF7(6)})),
-//           Poly(Evals({GF7(5), GF7(5), GF7(4), GF7(3), GF7(6)})),
-//       },
-//   };
+      {
+          Poly::Zero(3),
+          Poly(Evals({{0, GF7(3)}, {1, GF7(4)}, {2, GF7(3)}})),
+          Poly(Evals({{0, GF7(3)}, {1, GF7(4)}, {2, GF7(3)}})),
+          Poly(Evals({{0, GF7(4)}, {1, GF7(3)}, {2, GF7(4)}})),
+          Poly(Evals({{0, GF7(3)}, {1, GF7(4)}, {2, GF7(3)}})),
+      },
+  };
+  for (const auto& test : tests) {
+    EXPECT_EQ(test.a + test.b, test.sum);
+    EXPECT_EQ(test.b + test.a, test.sum);
+    EXPECT_EQ(test.a - test.b, test.amb);
+    EXPECT_EQ(test.b - test.a, test.bma);
 
-//   for (const auto& test : tests) {
-//     EXPECT_EQ(test.a * test.b, test.mul);
-//     EXPECT_EQ(test.b * test.a, test.mul);
-//     EXPECT_EQ(test.a / test.b, test.adb);
-//     EXPECT_EQ(test.b / test.a, test.bda);
+    Poly tmp = test.a;
+    tmp += test.b;
+    EXPECT_EQ(tmp, test.sum);
+    tmp -= test.b;
+    EXPECT_EQ(tmp, test.a);
+  }
+}
 
-//     Poly tmp = test.a;
-//     tmp *= test.b;
-//     EXPECT_EQ(tmp, test.mul);
-//     tmp /= test.b;
-//     EXPECT_EQ(tmp, test.a);
-//   }
-// }
+TEST_F(MultilinearSparseEvaluationsTest, MultiplicativeOperators) {
+  struct {
+    const Poly& a;
+    const Poly& b;
+    Poly mul;
+    Poly adb;
+    Poly bda;
+  } tests[] = {
+      {
+          polys_[1],
+          polys_[3],
+          Poly(Evals({{1, GF7(4)}, {2, GF7(2)}})),
+          Poly(Evals({{1, GF7(1)}, {2, GF7(1)}})),
+          Poly(Evals({{1, GF7(1)}, {2, GF7(1)}})),
+      },
+  };
+
+  for (const auto& test : tests) {
+    EXPECT_EQ(test.a * test.b, test.mul);
+    EXPECT_EQ(test.b * test.a, test.mul);
+    EXPECT_EQ(test.a / test.b, test.adb);
+    EXPECT_EQ(test.b / test.a, test.bda);
+
+    Poly tmp = test.a;
+    tmp *= test.b;
+    EXPECT_EQ(tmp, test.mul);
+    tmp /= test.b;
+    EXPECT_EQ(tmp, test.a);
+  }
+}
+
+TEST_F(MultilinearSparseEvaluationsTest, DivisionByZero) {
+  struct {
+    const Poly& a;
+    const Poly& b;
+
+  } tests[] = {
+      {
+          polys_[0],
+          polys_[1],
+      },
+  };
+
+  for (const auto& test : tests) {
+    EXPECT_THROW({ test.a / test.b; }, std::runtime_error);
+    EXPECT_THROW({ test.b / test.a; }, std::runtime_error);
+
+    Poly tmp = test.a;
+    EXPECT_THROW({ tmp /= test.b; }, std::runtime_error);
+  }
+}
 
 }  // namespace tachyon::math
