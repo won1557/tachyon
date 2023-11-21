@@ -38,6 +38,15 @@ class Prover {
   Blinder<PCSTy>& blinder() { return blinder_; }
   TranscriptWriter<Commitment>* writer() { return writer_.get(); }
 
+  bool CommitLagrange(const Evals& evals) {
+    if (evals.NumElements() != domain_->size()) return false;
+
+    Commitment commitment;
+    if (!pcs_.CommitLagrange(evals, &commitment)) return false;
+    writer_->WriteToProof(commitment);
+    return true;
+  }
+
   bool CommitEvalsWithBlind(const Evals& evals, BlindedPolynomial<Poly>* out) {
     if (evals.NumElements() != domain_->size()) return false;
 
