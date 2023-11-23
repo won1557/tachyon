@@ -13,6 +13,16 @@ tachyon_cc_library(
 )
 
 tachyon_cc_library(
+    name = "advice_factory",
+    hdrs = ["advice_factory.h"],
+    deps = [
+        "//tachyon/zk/base:prover",
+        "//tachyon/zk/plonk/plonk_prover:advice_single",
+        "//tachyon/zk/plonk/plonk_prover:witness_collection",
+    ],
+)
+
+tachyon_cc_library(
     name = "instance_single",
     hdrs = ["instance_single.h"],
     deps = [
@@ -48,6 +58,7 @@ tachyon_cc_unittest(
         "witness_collection_unittest.cc",
     ],
     deps = [
+        ":advice_factory",
         ":advice_single",
         ":instance_single",
         ":witness_collection",
