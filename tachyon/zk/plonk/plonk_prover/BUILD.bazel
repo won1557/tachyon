@@ -3,6 +3,16 @@ load("//bazel:tachyon_cc.bzl", "tachyon_cc_library", "tachyon_cc_unittest")
 package(default_visibility = ["//visibility:public"])
 
 tachyon_cc_library(
+    name = "advice_single",
+    hdrs = ["advice_single.h"],
+    deps = [
+        "//tachyon/base:logging",
+        "//tachyon/zk/base:blinded_polynomial",
+        "@com_google_absl//absl/container:flat_hash_map",
+    ],
+)
+
+tachyon_cc_library(
     name = "instance_single",
     hdrs = ["instance_single.h"],
     deps = [
@@ -15,8 +25,12 @@ tachyon_cc_library(
 
 tachyon_cc_unittest(
     name = "plonk_prover_unittests",
-    srcs = ["instance_single_unittest.cc"],
+    srcs = [
+        "advice_single_unittest.cc",
+        "instance_single_unittest.cc",
+    ],
     deps = [
+        ":advice_single",
         ":instance_single",
         "//tachyon/zk/base:halo2_prover_test",
     ],
