@@ -26,7 +26,7 @@ TEST_F(SumcheckMLProverTest, ProverInitTest) {
   ListOfProductsOfPolynomials<GF7, kMaxDegree> polynomial(kMaxDegree);
 
   ProverState<GF7, kMaxDegree> prover_state =
-      IPForMLSumcheck<GF7, kMaxDegree>::prover_init(polynomial);
+      IPForMLSumcheck<GF7, kMaxDegree>::ProverInit(polynomial);
 
   ASSERT_FALSE(prover_state.error_flag);
   ASSERT_EQ(prover_state.num_vars, polynomial.num_variables());

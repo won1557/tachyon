@@ -10,19 +10,6 @@
 
 namespace tachyon::math {
 
-// TODO: ETHAN COMMENT
-// Convention
-// - 변수명을 snake case로 변경하기
-// - Constructor와 일반 함수 사이에 enter하나 필요
-// - 함수 이름은 CamelCase, 시작을 대문자로 (Pascal Case?)
-// - 인자가 하나인 Constructor 앞에는 "explicit" 키워드를 붙인다.
-//
-// Rc 대신에 shared_ptr을 쓰는게 맞는지?
-// HashMap 대신에 flat_hash_map을 쓰는게 맞는지?
-//  - 아닐것 같음.
-//  - flat_hash_map: [(key, value), (key, value)...]
-//  - HashMap: {key: value, key: value, ...}
-
 struct PolynomialInfo {
   size_t max_multiplicands_ = 0;
   size_t num_variables_ = 0;
@@ -31,9 +18,7 @@ struct PolynomialInfo {
 template <typename F, size_t kMaxDegree>
 class ListOfProductsOfPolynomials {
  public:
-  // TODO(woony): check type.
-  // MultilinearExtension<MultilinearDenseEvaluations<F, kMaxDegree>>;
-  using DenseMultilinearExtension = MultilinearDenseEvaluations<F, kMaxDegree>;
+   using DenseMultilinearExtension = MultilinearDenseEvaluations<F, kMaxDegree>;
 
   ListOfProductsOfPolynomials() = default;
   explicit ListOfProductsOfPolynomials(size_t num_variables)

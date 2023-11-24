@@ -30,7 +30,7 @@ tachyon_cc_library(
     name = "ml_prover",
     hdrs = ["ml_prover.h"],
     deps = [
-        ":ml_verifier",
+        # ":ml_verifier",
         "//tachyon/math/polynomials/multivariate:multilinear_extension",
     ],
 )

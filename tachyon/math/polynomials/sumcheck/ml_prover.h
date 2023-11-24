@@ -32,11 +32,9 @@ struct ProverState {
 template <typename F, size_t kMaxDegree>
 class IPForMLSumcheck {
  public:
-  // TODO(woony): check type!!
-  // MultilinearExtension<MultilinearDenseEvaluations<F, kMaxDegree>>;
   using DenseMultilinearExtension = MultilinearDenseEvaluations<F, kMaxDegree>;
 
-  static ProverState<F, kMaxDegree> prover_init(
+  static ProverState<F, kMaxDegree> ProverInit(
       const ListOfProductsOfPolynomials<F, kMaxDegree>& polynomial) {
     ProverState<F, kMaxDegree> prover_state{
         std::vector<F>(),
@@ -59,7 +57,7 @@ class IPForMLSumcheck {
     return prover_state;
   }
 
-  static ProverMsg<F> prove_round(ProverState<F, kMaxDegree>& prover_state,
+  static ProverMsg<F> ProveRound(ProverState<F, kMaxDegree>& prover_state,
                                   const std::optional<VerifierMsg<F>>& v_msg) {
     ProverMsg<F> empty_msg;
 
