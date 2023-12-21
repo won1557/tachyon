@@ -3,13 +3,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "absl/container/flat_hash_map.h"
 
-#include "tachyon/base/functional/identity.h"
 #include "tachyon/base/logging.h"
 #include "tachyon/zk/plonk/circuit/floor_planner/constant.h"
 #include "tachyon/zk/plonk/circuit/floor_planner/simple_lookup_table_layouter.h"
