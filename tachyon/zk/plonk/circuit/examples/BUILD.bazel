@@ -21,11 +21,31 @@ tachyon_cc_library(
     deps = ["//tachyon/zk/plonk/circuit"],
 )
 
+tachyon_cc_library(
+    name = "simple_lookup_v1_circuit",
+    hdrs = ["simple_lookup_v1_circuit.h"],
+    deps = [
+        "//tachyon/zk/plonk/circuit",
+        "//tachyon/zk/plonk/circuit/floor_planner/v1:v1_floor_planner",
+    ],
+)
+
+tachyon_cc_library(
+    name = "simple_v1_circuit",
+    hdrs = ["simple_v1_circuit.h"],
+    deps = [
+        "//tachyon/zk/plonk/circuit",
+        "//tachyon/zk/plonk/circuit/floor_planner/v1:v1_floor_planner",
+    ],
+)
+
 tachyon_cc_unittest(
     name = "examples_unittests",
     srcs = [
         "simple_circuit_unittest.cc",
         "simple_lookup_circuit_unittest.cc",
+        "simple_lookup_v1_circuit_unittest.cc",
+        "simple_v1_circuit_unittest.cc",
     ],
     deps = [
         ":circuit_test",
